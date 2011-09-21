@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>QUnit Test Suite</title>
+	<script type="text/javascript" src="../lib/jquery-1.6.4.min.js"></script>
+	<script type="text/javascript" src="../lib/jquery.ws-validate.js"></script>
+	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
+	<script type="text/javascript" src="../qunit/qunit.js"></script>
+	<script type="text/javascript" src="test.js"></script>
+</head>
+<body>
+	<h1 id="qunit-header">QUnit Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">
+	 
+	</div>	
+  
+    <form id="myform" action="#" method="post" onsubmit="return false;">
+
+    	<p>
+    		<label for="name">Naam</label><br/>
+    		<input type="text" value="" name="name" id="name" />
+    	</p>
+
+    	<p>
+    		<label for="email">Email</label><br/>
+    		<input type="text" value="" name="email" id="email" />
+    	</p>
+
+    	<p>
+        <label>Actief</label><br />
+    		<input type="radio" value="true" name="active" />
+    		<label for="active" id="active_true">Ja</label><br />
+    		<input type="radio" value="v" name="active" id="active" />
+    		<label for="active" id="active_false">Nee</label>
+    	</p>
+
+      <input type="submit" value="Verstuur" />
+
+    </form>	 
+
+</body>
+</html>
