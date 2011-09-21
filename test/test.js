@@ -1,22 +1,27 @@
-test("Constructor", function() {
-  var validator = $("#myform").wsValidator();
-  console.log(validator);
-  ok( validator, "OrderForm should validate");
+test("wsForm:: constructor", function() {
+  var form = $("#myform").wsForm();
+  ok( (form != undefined), "OrderForm should validate");
 });
 
-// test("Constructor::AddRule", function() {
-//   var validator = $("#myform").wsValidate();
-//   validator.addRule("test", function(){});
-//   ok( (validator.rules["test"] != undefined) , "addRule should add a rule option");
-// });
-// 
-// test("Constructor::Elements", function() {
-//   var validator = $("#myform").wsValidate();
-//   ok( ($.type(validator.elements) == "array") , "elements should be an array (" + $.type(validator.elements) + ")");
-// });
-// 
-// 
-// test("Attributes", function(){
-//   var name = $("#myform [name=name]");
-//   ok( name.attr("data-validate").length > 0, "data-validate must be present");
-// });
+test("wsForm:: elements", function() {
+  var form = $("#myform").wsForm();
+  ok( ($.type(form.elements) == "array") , "elements should be an array (" + $.type(form.elements) + ")");
+});
+
+test("wsForm:: validate", function() {
+  var form = $("#myform").wsForm();
+  var result = form.isValid();
+  ok( (result === true || result === false) , "should return true or false");
+});
+
+test("wsElement:: constructor", function() {
+  var element = $("#name").wsElement();
+  ok( $.type(element.valid) == "boolean" , "should return true or false");
+});
+
+test("wsValidator:: addRule & getRule", function() {
+  ok( ($.type($.wsValidator.getRule("test")) == "undefined") , "getRule should not return");
+  $.wsValidator.addRule("test", function(){});
+  ok( ($.type($.wsValidator.getRule("test")) == "function") , "addRule should add a rule option and getRule should return it");
+});
+

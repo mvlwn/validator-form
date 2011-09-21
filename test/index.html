@@ -22,20 +22,30 @@
     <form id="myform" action="#" method="post" onsubmit="return false;">
 
     	<p>
-    		<label for="name">Naam</label><br/>
-    		<input type="text" value="" name="name" id="name" data-pattern="^[a-zA-Z\w]$" data-validation="required format" />
+    		<label for="name">Name</label><br/>
+    		<input type="text" value="" name="name" id="name" data-pattern="^[a-zA-Z\w]{1,30}$" data-validation="required format" />
     	</p>
 
     	<p>
     		<label for="email">Email</label><br/>
-    		<input type="text" value="" name="email" id="email" />
+    		<input type="text" value="" name="email" id="email" data-validation="required" />
     	</p>
 
     	<p>
-        <label>Actief</label><br />
-    		<input type="radio" value="true" name="active" />
+    		<label for="job">Job</label><br/>
+    		<select name="job" id="job" data-validation="required">
+    		  <option value="">Pick a job</option>
+    		  <option value="1">Prime Minister</option>
+    		  <option value="2">Lawyer</option>
+    		  <option value="3">IT-Specialist</option>
+    		</select>
+    	</p>
+
+    	<p>
+        <label>Active?</label><br />
+    		<input type="radio" value="true" name="active" data-validation="required" />
     		<label for="active" id="active_true">Ja</label><br />
-    		<input type="radio" value="v" name="active" id="active" />
+    		<input type="radio" value="v" name="active" id="active" data-validation="required" />
     		<label for="active" id="active_false">Nee</label>
     	</p>
 
