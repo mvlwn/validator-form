@@ -1,0 +1,16 @@
+p.form-group.error,
+select.error,
+input[type=text].error,
+input[type=password].error{
+  border:  1px red dotted;
+}
+
+
+.valid{
+  border:  1px green solid;
+}
+
+.errorlist{
+  padding: 2em;
+  border:  2px red solid;
+}

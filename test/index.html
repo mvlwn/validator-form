@@ -4,9 +4,10 @@
 	<meta charset="UTF-8" />
 	<title>QUnit Test Suite</title>
 	<script type="text/javascript" src="../lib/jquery-1.6.4.min.js"></script>
-	<script type="text/javascript" src="../lib/jquery.ws-validate.js"></script>
+	<script type="text/javascript" src="../jquery.ws-validate.js"></script>
 	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
 	<script type="text/javascript" src="../qunit/qunit.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" media="screen">
 	<script type="text/javascript" src="test.js"></script>
 </head>
 <body>
@@ -23,12 +24,22 @@
 
     	<p>
     		<label for="name">Name</label><br/>
-    		<input type="text" value="" name="name" id="name" data-pattern="^[a-zA-Z\w]{1,30}$" data-validation="required format" />
+    		<input type="text" value="" name="name" id="name" data-pattern="^[a-zA-Z ]{1,30}$" data-validation="required format" />
     	</p>
 
     	<p>
     		<label for="email">Email</label><br/>
     		<input type="text" value="" name="email" id="email" data-validation="required" />
+    	</p>
+
+      <p>
+    		<label for="optional_input">Optional</label><br/>
+    		<input type="text" value="" name="optional_input" id="optional_input" />
+    	</p>
+
+      <p>
+    		<label for="password">Password</label><br/>
+    		<input type="password" value="" name="password" id="password" data-validation="required" />
     	</p>
 
     	<p>
@@ -41,12 +52,22 @@
     		</select>
     	</p>
 
-    	<p>
-        <label>Active?</label><br />
-    		<input type="radio" value="true" name="active" data-validation="required" />
-    		<label for="active" id="active_true">Ja</label><br />
-    		<input type="radio" value="v" name="active" id="active" data-validation="required" />
-    		<label for="active" id="active_false">Nee</label>
+    	<p class="form-group">
+        <label id="active">Active?</label><br />
+    		<input type="radio" value="true" id="active_true" name="active" data-validation="required" />
+    		<label for="active_true">Ja</label><br />
+    		<input type="radio" value="false" id="active_false" name="active" />
+    		<label for="active_false">Nee</label>
+    	</p>
+
+      <p>
+        <label>Options</label><br />
+    		<input type="hidden" value="false" name="option1" />
+        <input type="checkbox" value="true" id="option1" name="option1" data-validation="required" />
+    		<label for="option1">Option 1</label><br />
+        <input type="hidden" value="false" name="option2" />
+        <input type="checkbox" value="true" id="option2" name="option2" data-validation="required" />
+    		<label for="option2">Option 2</label><br />
     	</p>
 
       <input type="submit" value="Verstuur" />
