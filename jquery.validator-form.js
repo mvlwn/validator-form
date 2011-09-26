@@ -34,8 +34,8 @@
           var object = element.object;
           var pattern = object.attr("data-pattern");
           var value = element.value();
-
-          if(value.length == 0)
+          
+          if(value == undefined || value.length == 0)
             return;
 
           var testPattern = function(value, pattern){
@@ -197,12 +197,13 @@
         var object = $(this);
         if(object.attr(validationAttribute) !== undefined) {
           if(object.attr("type") == "radio"){
-            var radioObjects = currentForm.find("[name=" + object.attr("name") + "]");
-            $.each(radioObjects, function(){
-              var radioObject = $(this);
-              radioObject.attr(validationAttribute, object.attr(validationAttribute));
-              elements.push(new ValidatorElement(radioObject, form));
-            })
+//            var radioObjects = form.findByName(object.attr("name"));
+            elements.push(new ValidatorElement(object, form));
+//            $.each(radioObjects, function(){
+//              var radioObject = $(this);
+//              radioObject.attr(validationAttribute, object.attr(validationAttribute));
+//              elements.push(new ValidatorElement(radioObject, form));
+//            })
           }else{
             elements.push(new ValidatorElement(object, form));
           }
@@ -317,10 +318,12 @@
       },
 
       getValue: function(element){
+        console.log(element.type);
         switch(element.type){
           case "radio":
             var name = element.object.attr("name");
             var radioObject = element.form.currentForm.find("[name=" + name + "]:checked");
+            console.log(radioObject);
             return radioObject.val();
           case "checkbox":
             // if there is a hidden fallback option return that value

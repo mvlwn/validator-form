@@ -111,6 +111,23 @@ test("ValidatorElement :: getValue :: text", function() {
   form.destroy();
 });
 
+test("ValidatorElement :: Radiobuttons", function() {
+  var form = $("#myform").validatorForm();
+  var radioButtons = $("#myform [name=active]");
+  var element = form.element($("#active_true"));
+
+  $(radioButtons).attr("checked", false);
+  ok( element.value() == undefined , "Radio");
+
+  $(radioButtons[0]).attr("checked", 'checked');
+  ok( element.value() == $(radioButtons[0]).val() , "Radio");
+
+  $(radioButtons[1]).attr("checked", 'checked');
+  ok( element.value() == $(radioButtons[1]).val() , "Radio");
+
+  form.destroy();
+});
+
 test("Validator :: addRule & getRule", function() {
   ok( ($.type($.validator.getRule("test")) == "undefined") , "getRule should not return");
   $.validator.addRule("test", function(){});
