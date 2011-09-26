@@ -1,4 +1,4 @@
--validation/ and  validator-form -- Flexible jQuery Validation
+validator-form -- Flexible jQuery Validation
 ============================================
 
 ## Description
