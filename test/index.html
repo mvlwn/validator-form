@@ -4,11 +4,16 @@
 	<meta charset="UTF-8" />
 	<title>QUnit Test Suite</title>
 	<script type="text/javascript" src="../lib/jquery-1.6.4.min.js"></script>
-	<script type="text/javascript" src="../jquery.ws-validate.js"></script>
+	<script type="text/javascript" src="../jquery.validator-form.js"></script>
 	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
 	<script type="text/javascript" src="../qunit/qunit.js"></script>
   <link rel="stylesheet" href="style.css" type="text/css" media="screen">
 	<script type="text/javascript" src="test.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function($){
+      $("#myform").validatorForm();
+    });
+  </script>
 </head>
 <body>
 	<h1 id="qunit-header">QUnit Test Suite</h1>
