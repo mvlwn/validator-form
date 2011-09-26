@@ -29,6 +29,11 @@
           var pattern = object.attr("data-pattern");
           var value = element.value();
 
+          var testPattern = function(value, pattern){
+            var regExp = new RegExp(pattern, "");
+            return regExp.test(value);
+          };
+
           if(event == undefined || event.type == "submit" || event.type == "change"){
             if(pattern){
               return testPattern(value, pattern);
@@ -58,11 +63,6 @@
         },
         msg: "Het veld moet uit meer karakters bestaan"
       }
-    };
-
-    var testPattern = function(value, pattern){
-      var regExp = new RegExp(pattern, "");
-      return regExp.test(value);
     };
 
     return {

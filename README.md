@@ -12,33 +12,30 @@ The script is tested with jQuery 1.6
 
 ## Usage
 
-### Attribute conditions
+### HTML-attribute conditions
 
 ```
-  $(document).ready(function($){
-    $("#myform").validatorForm();
-  });
+  $("#myform").validatorForm();
 
   <form id="myform" action="#" method="post" onsubmit="return false;">
    	<p>
    		<label for="name">Name</label><br/>
-   		<input type="text" value="" name="name" id="name" data-validation="required format" data-pattern="^[a-zA-Z ]{1,30}$" />
+   		<input type="text" value="" name="name" id="name"
+   		  data-validation="required format" data-pattern="^[a-zA-Z ]{1,30}$" />
    	</p>
   </form>
 ```
 
-### Function conditions
+### Function-attribute conditions
 
 ```
-  $(document).ready(function($){
-    $("#myform").validatorForm({
-      input: {
-        "name": {
-          validation: "required format",
-          pattern: "^[a-zA-Z ]{1,30}$"
-        }
+  $("#myform").validatorForm({
+    input: {
+      "name": {
+        validation: "required format",
+        pattern: "^[a-zA-Z ]{1,30}$"
       }
-    });
+    }
   });
 
   <form id="myform" action="#" method="post" onsubmit="return false;">
@@ -48,3 +45,10 @@ The script is tested with jQuery 1.6
    	</p>
   </form>
 ```
+
+### Built-in rules
+
+* Required: This rule checks if there is a value for a form-element. The validation will only hit on submit.
+* Format: Regex check on the value of the form-element. Will use the data-pattern attribute
+* Maxlength: Will trigger when length of the value is too long.
+* Minlength: Will trigger when the length of the value is too short.
