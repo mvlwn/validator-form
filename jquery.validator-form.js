@@ -124,12 +124,12 @@
     },
 
     save: function(){
-      $.data(this.currentForm[0], 'validation_form', this);
+      $.data(this.currentForm[0], 'validationForm', this);
     },
 
     destroy: function(){
       this.reset();
-      $.removeData($(this.currentForm)[0], 'validation_form');
+      $.removeData($(this.currentForm)[0], 'validationForm');
     },
 
     reset: function(){
@@ -382,6 +382,7 @@
     },
 
     validate: function() {
+      console.log(this[0])l
       var validator = $.data(this[0], 'validatorForm');
       validator.validate();
       return validator.isValid();

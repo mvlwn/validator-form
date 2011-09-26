@@ -2,27 +2,17 @@
 <html>
 <head>
 	<meta charset="UTF-8" />
-	<title>QUnit Test Suite</title>
+	<title>jQuery ValidatorForm</title>
+  <link rel="stylesheet" href="../test/style.css" type="text/css" media="screen">
 	<script type="text/javascript" src="../lib/jquery-1.6.4.min.js"></script>
 	<script type="text/javascript" src="../jquery.validator-form.js"></script>
-	<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
-	<script type="text/javascript" src="../qunit/qunit.js"></script>
-  <link rel="stylesheet" href="style.css" type="text/css" media="screen">
-	<script type="text/javascript" src="test.js"></script>
-  <script type="text/javascript">
+	<script type="text/javascript">
     $(document).ready(function($){
       $("#myform").validatorForm();
     });
   </script>
 </head>
 <body>
-	<h1 id="qunit-header">QUnit Test Suite</h1>
-	<h2 id="qunit-banner"></h2>
-	<div id="qunit-testrunner-toolbar"></div>
-	<h2 id="qunit-userAgent"></h2>
-	<ol id="qunit-tests"></ol>
-	<div id="qunit-fixture">
-
     <form id="myform" action="#" method="post" onsubmit="return false;">
 
     	<p>
@@ -76,7 +66,6 @@
       <input type="submit" value="Verstuur" />
 
     </form>
-    
-	</div>
+
 </body>
 </html>
