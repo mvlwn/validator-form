@@ -35,6 +35,9 @@
           var pattern = object.attr("data-pattern");
           var value = element.value();
 
+          if(value.length == 0)
+            return;
+
           var testPattern = function(value, pattern){
             var regExp = new RegExp(pattern, "");
             return regExp.test(value);
@@ -235,10 +238,24 @@
       });
     },
 
+    displayValidation: function(element){
+      if(element.valid === false){
+        this.displayErrorlist(element, element.errors);
+      } else if(element.valid === true){
+        this.displayValidationSuccess(element);
+      }
+    },
+
     displayErrorlist: function(element, errors){
       if(this.settings.displayErrorlist)
         return this.settings.displayErrorlist(element, errors);
       return this.methods.displayErrorlist(element, errors);
+    },
+
+    displayValidationSuccess: function(element){
+      if(this.settings.displayValidationSuccess)
+        return this.settings.displayValidationSuccess(element);
+      return this.methods.displayValidationSuccess(element);
     },
 
     errorlist: function(element, errors){
@@ -247,10 +264,10 @@
       return this.methods.errorlist(element, errors);
     },
 
-    removeErrorlist: function(element){
-      if(this.settings.removeErrorlist)
-        return this.settings.removeErrorlist(element);
-      return this.methods.removeErrorlist(element);
+    cleanElement: function(element){
+      if(this.settings.cleanElement)
+        return this.settings.cleanElement(element);
+      return this.methods.cleanElement(element);
     },
 
     container: function(element){
@@ -260,6 +277,11 @@
     },
 
     methods: {
+
+      displayValidationSuccess: function(element){
+        var validClass = element.form.settings.validClass;
+        element.object.addClass(validClass);
+      },
 
       displayErrorlist: function(element, errors){
         var errorClass = element.form.settings.errorClass;
@@ -280,11 +302,12 @@
         return errorlist;
       },
 
-      removeErrorlist: function(element){
+      cleanElement: function(element){
+        var validClass = element.form.settings.validClass;
         var errorClass = element.form.settings.errorClass;
         var errorContainerClass = element.form.settings.errorContainerClass;
         var errorlistClass = element.form.settings.errorlistClass;
-        element.object.removeClass(errorClass);
+        element.object.removeClass(errorClass).removeClass(validClass);
         element.container.removeClass(errorContainerClass);
         element.container.find("." + errorlistClass).remove();
       },
@@ -353,14 +376,19 @@
       var element = this;
       element.errors = this.errorsFromValidation(e);
       element.valid = null;
-      element.form.removeErrorlist(element);
+      element.form.cleanElement(element);
 
       if(element.errors.length > 0) {
         element.object.unbind("keyup");
         element.attach("keyup");
-        element.form.displayErrorlist(element, element.errors);
         element.valid = false;
       }
+
+      if(element.value() !== undefined && element.value().length > 0){
+        element.valid = true;
+      }
+
+      element.form.displayValidation(element);
 
       return element.valid;
     },
