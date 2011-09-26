@@ -318,12 +318,10 @@
       },
 
       getValue: function(element){
-        console.log(element.type);
         switch(element.type){
           case "radio":
             var name = element.object.attr("name");
             var radioObject = element.form.currentForm.find("[name=" + name + "]:checked");
-            console.log(radioObject);
             return radioObject.val();
           case "checkbox":
             // if there is a hidden fallback option return that value
