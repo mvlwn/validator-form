@@ -14,6 +14,7 @@ The script is tested with jQuery 1.6
 
 ### Attribute conditions
 
+```
   $(document).ready(function($){
     $("#myform").validatorForm();
   });
@@ -24,9 +25,11 @@ The script is tested with jQuery 1.6
    		<input type="text" value="" name="name" id="name" data-validation="required format" data-pattern="^[a-zA-Z ]{1,30}$" />
    	</p>
   </form>
-  
+```
+
 ### Function conditions
 
+```
   $(document).ready(function($){
     $("#myform").validatorForm({
       input: {
@@ -44,4 +47,4 @@ The script is tested with jQuery 1.6
    		<input type="text" value="" name="name" id="name" />
    	</p>
   </form>
-
+```
