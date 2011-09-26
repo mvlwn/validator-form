@@ -6,6 +6,12 @@
       required: {
         check: function(element, event){
           var object = element.object;
+          var required = element.input["required"];
+
+          if(!callCondition(required)){
+            return true;
+          }
+          
           var value = element.value();
           var length = 0;
 
@@ -65,6 +71,18 @@
       }
     };
 
+    var callCondition = function(condition){
+      if (condition === undefined){
+        return true;
+      } else if($.type(condition) == "boolean"){
+        return condition;
+      } else if($.type(condition) == "function"){
+        return condition.call();
+      } else {
+        console.error("Condition was not a valid type: " + condition );
+      }
+    };
+
     return {
       addRule: function(name, rule){
         rules[name] = rule;
@@ -80,6 +98,7 @@
     this.currentForm = object;
     this.settings = $.extend({}, this.defaults, options);
     this.elements = this.collectElements();
+    this.errors = {};
     this.save();
 
     // Add novalidate tag if HTML5.
@@ -97,25 +116,30 @@
 
     defaults: {
       elementOptions: {},
-      input: [],
       errorlistClass: "errorlist",
       errorContainerClass: "error",
       errorClass: "error",
       validClass: "valid",
       formGroupClass: 'form-group',
       validationAttribute: 'data-validation',
-      element: {}
+      element: {},
+      input: {}
     },
 
     validate: function(e) {
+      var form = this;
+      form.errors = {};
       for(var i in this.elements) {
-        this.elements[i].validate(e);
+        var element = this.elements[i];
+        if(!element.validate(e)){
+          form.errors[element.object.attr("name")] = element.errors;
+        }
       }
     },
 
     isValid: function() {
       for(var i in this.elements) {
-        if(!this.elements[i].valid) {
+        if(this.elements[i].valid === false) {
           this.elements[i].object.focus();
           return false;
         }
@@ -124,12 +148,12 @@
     },
 
     save: function(){
-      $.data(this.currentForm[0], 'validationForm', this);
+      $.data(this.currentForm[0], 'validatorForm', this);
     },
 
     destroy: function(){
       this.reset();
-      $.removeData($(this.currentForm)[0], 'validationForm');
+      $.removeData($(this.currentForm)[0], 'validatorForm');
     },
 
     reset: function(){
@@ -163,7 +187,8 @@
       var validationAttribute = this.settings.validationAttribute;
       var elements = [];
 
-      form.setupElementsFromOptions();
+      form.setupInputFromElements();
+      form.setupElementsFromInput();
 
       currentForm.find("[" + validationAttribute + "]").each(function() {
         var object = $(this);
@@ -183,7 +208,7 @@
       return elements;
     },
 
-    setupElementsFromOptions: function(){
+    setupElementsFromInput: function(){
       var form = this;
       if(form.settings.input){
         $.each(form.settings.input, function(name, options){
@@ -195,6 +220,19 @@
           }
         })
       }
+    },
+
+    setupInputFromElements: function(){
+      var form = this;
+      form.currentForm.find("[" + form.settings.validationAttribute + "]").each(function() {
+        var object = $(this);
+        var input = {};
+        $(this.attributes).each(function(i, attribute){
+          if(new RegExp("data-", "").test(attribute.name))
+            input[attribute.name.replace("data-", "")] = attribute.value;
+        });
+        form.settings.input[object.attr("name")] = input;
+      });
     },
 
     displayErrorlist: function(element, errors){
@@ -284,8 +322,10 @@
     this.object = object;
     this.type = this.inputType();
     this.valid = false;
+    this.errors = [];
     this.attach("change");
     this.container = form.container(this);
+    this.input = this.form.settings.input[object.attr("name")];
     this.settings = $.extend({}, this.defaults, form.settings.elementOptions);
   };
       
@@ -311,17 +351,18 @@
 
     validate : function(e) {
       var element = this;
-      var errors = this.errorsFromValidation(e);
+      element.errors = this.errorsFromValidation(e);
       element.valid = null;
       element.form.removeErrorlist(element);
 
-      if(errors.length) {
+      if(element.errors.length > 0) {
         element.object.unbind("keyup");
         element.attach("keyup");
-        element.form.displayErrorlist(element, errors);
+        element.form.displayErrorlist(element, element.errors);
         element.valid = false;
       }
 
+      return element.valid;
     },
 
     value: function(){
@@ -350,7 +391,7 @@
 
 //    @todo after tests, the script seems broken
       if(!element.object.attr(validationAttribute)){
-        console.log(element.object);
+//        console.log(element.object);
       }
 
       var types = element.object.attr(validationAttribute).split(" ");
@@ -382,7 +423,6 @@
     },
 
     validate: function() {
-      console.log(this[0])l
       var validator = $.data(this[0], 'validatorForm');
       validator.validate();
       return validator.isValid();

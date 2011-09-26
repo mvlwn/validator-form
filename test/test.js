@@ -1,10 +1,10 @@
-test("WSForm :: constructor", function() {
+test("ValidatorForm :: constructor", function() {
   var form = $("#myform").validatorForm();
   ok( (form != undefined), "OrderForm should validate");
   form.destroy();
 });
 
-test("WSForm :: settings", function() {
+test("ValidatorForm :: settings", function() {
   var form = $("#myform").validatorForm();
 
   // Defaults
@@ -22,7 +22,7 @@ test("WSForm :: settings", function() {
   form2.destroy();
 });
 
-test("WSForm :: settings :: elements", function() {
+test("ValidatorForm :: settings :: elements", function() {
 
   var form = $("#myform").validatorForm();
 
@@ -44,41 +44,41 @@ test("WSForm :: settings :: elements", function() {
   form.destroy();
 });
 
-test("WSForm :: elements", function() {
+test("ValidatorForm :: elements", function() {
   var form = $("#myform").validatorForm();
   ok( ($.type(form.elements) == "array") , "elements should be an array (" + $.type(form.elements) + ")");
   form.destroy();
 });
 
-test("WSForm :: elements :: finding elements", function() {
+test("ValidatorForm :: elements :: finding elements", function() {
   var form = $("#myform").validatorForm();
   var element = form.element($("#name"));
   ok( (element.object[0] == $("#name")[0]) , "findElement should return the element");
   form.destroy();
 });
 
-test("WSForm :: validate", function() {
+test("ValidatorForm :: validate", function() {
   var form = $("#myform").validatorForm();
   var result = form.isValid();
   ok( (result === true || result === false) , "should return true or false");
   form.destroy();
 });
 
-test("WSForm :: validate", function() {
+test("ValidatorForm :: validate", function() {
   var form = $("#myform").validatorForm();
   var result = form.validate();
   ok( (form.elements.length > 0) , "should return true or false");
   form.destroy();
 });
 
-test("WSElement :: constructor", function() {
+test("ValidatorElement :: constructor", function() {
   var form = $("#myform").validatorForm();
   var element = form.element($("#name"));
   ok( $.type(element.valid) == "boolean" , "should return true or false");
   form.destroy();
 });
 
-test("WSElement :: override", function() {
+test("ValidatorElement :: override", function() {
   var form = $("#myform").validatorForm({
     errorlist: function(){ return "test" }
   });
@@ -96,14 +96,14 @@ test("WSElement :: override", function() {
   form2.destroy();
 });
 
-test("WSElement :: override", function() {
+test("ValidatorElement :: override", function() {
   var form = $("#myform").validatorForm();
   var element = form.element($("#name"));
   ok( form.errorlist(element) != "test" , "should override the method errorlist by prototype");
   form.destroy();
 });
 
-test("WSElement :: getValue :: text", function() {
+test("ValidatorElement :: getValue :: text", function() {
   var form = $("#myform").validatorForm();
   var element = form.element($("#name"));
   $("#name").val('test');
@@ -111,8 +111,29 @@ test("WSElement :: getValue :: text", function() {
   form.destroy();
 });
 
-test("wsValidator :: addRule & getRule", function() {
+test("Validator :: addRule & getRule", function() {
   ok( ($.type($.validator.getRule("test")) == "undefined") , "getRule should not return");
   $.validator.addRule("test", function(){});
   ok( ($.type($.validator.getRule("test")) == "function") , "addRule should add a rule option and getRule should return it");
+});
+
+test("Validator :: conditions", function() {
+  var cleanForm = $("#clean-form").validatorForm({
+    input: {
+      "email": {
+        validation: "required",
+        required: function(){
+          return $("#check-email").is(":checked");
+        }
+      }
+    }
+  });
+
+  cleanForm.validate();
+  ok( cleanForm.isValid() , "form should be valid");
+
+  $("input#check-email").attr("checked", "checked");
+  cleanForm.validate();
+  ok( !cleanForm.isValid(), "form should not be valid");
+
 });
