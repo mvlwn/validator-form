@@ -121,14 +121,10 @@ test("ValidatorElement :: Radiobuttons", function() {
   ok( element.value() == undefined , "Radio");
 
   $(radioButtons[0]).attr("checked", true);
-  console.log(form.methods.getValue(element));
-  console.log(radioButtons[0]);
   ok( element.value() == $(radioButtons[0]).val() , "Radio");
 
   $(radioButtons[0]).attr("checked", false);
   $(radioButtons[1]).attr("checked", true);
-  console.log(element.value());
-  console.log(radioButtons[1]);
   ok( element.value() == $(radioButtons[1]).val() , "Radio");
 
   form.destroy();
