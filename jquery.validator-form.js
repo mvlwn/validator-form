@@ -32,7 +32,6 @@
       format: {
         check: function(element, event){
 
-          var object = element.object;
           var pattern = element.input["pattern"];
           var value = element.value();
           var result = undefined;
@@ -42,8 +41,7 @@
 
           var testPattern = function(value, pattern){
             var regExp = new RegExp(pattern, "");
-            var result = regExp.test(value);
-            return result;
+            return regExp.test(value);
           };
 
           if(event == undefined || event.type == "submit" || event.type == "change"){
@@ -383,11 +381,11 @@
         });
       }
 
-      if(event == "keyup") {
-        element.object.bind("keyup",function(e) {
-          return element.validate(e);
-        });
-      }
+//      if(event == "keyup") {
+//        element.object.bind("keyup",function(e) {
+//          return element.validate(e);
+//        });
+//      }
 
     },
 

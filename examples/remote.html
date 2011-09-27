@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>jQuery ValidatorForm</title>
+  <link rel="stylesheet" href="../test/style.css" type="text/css" media="screen">
+	<script type="text/javascript" src="../lib/jquery-1.6.4.min.js"></script>
+  <script type="text/javascript" src="../lib/jquery.mockjax.js"></script>
+	<script type="text/javascript" src="../jquery.validator-form.js"></script>
+	<script type="text/javascript">
+    $(document).ready(function($){
+
+      $.mockjax({
+        url: '/examples/*',
+        responseTime: 750,
+        responseText: {
+          status: 'success',
+          message: 'Your code is valid'
+        }
+      });
+
+      $.validator.addRule("remote", {
+        check: function(element, event){
+
+          var object = element.object;
+          var name = object.attr('name');
+          var value = element.value();
+          var url = "/examples/check_attribute";
+
+          $.ajax(
+            url,
+            {
+              async: false,
+              dataType: 'json',
+              data: $(element.form.currentForm).serialize(),
+              type: 'GET',
+              success: function(data, status, xhr){
+                return true;
+              },
+              error: function(xhr, status, error){
+                return false;
+              }
+            }
+          )
+
+        },
+        msg: "Remote check failed"
+      });
+
+      $("#form").validatorForm({
+        input: {
+          "code": {
+            validation: "remote"
+          }
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+
+    <form id="form" action="#" method="post" onsubmit="return false;">
+
+    	<p>
+    		<label for="code">Code with remote check</label><br/>
+    		<input type="text" value="" name="code" id="code" />
+    	</p>
+
+      <input type="submit" value="Verstuur" />
+
+    </form>
+
+
+</body>
+</html>
