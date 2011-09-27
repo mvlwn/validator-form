@@ -8,8 +8,8 @@
           var object = element.object;
           var required = element.input["required"];
 
-          if(!callCondition(required)){
-            return true;
+          if(callCondition(required) === false){
+            return undefined;
           }
           
           var value = element.value();
@@ -31,26 +31,28 @@
       },
       format: {
         check: function(element, event){
+
           var object = element.object;
-          var pattern = object.attr("data-pattern");
+          var pattern = element.input["pattern"];
           var value = element.value();
-          
+          var result = undefined;
+
           if(value == undefined || value.length == 0)
             return;
 
           var testPattern = function(value, pattern){
             var regExp = new RegExp(pattern, "");
-            return regExp.test(value);
+            var result = regExp.test(value);
+            return result;
           };
 
           if(event == undefined || event.type == "submit" || event.type == "change"){
             if(pattern){
-              return testPattern(value, pattern);
-            }else{
-              return true
+              result = testPattern(value, pattern);
             }
           }
-          return true;
+          
+          return result;
         },
         msg: "De inhoud van dit veld klopt niet"
       },
@@ -290,6 +292,7 @@
       displayValidationSuccess: function(element){
         var validClass = element.form.settings.validClass;
         element.object.addClass(validClass);
+//        element.container.addClass(validClass);
       },
 
       displayErrorlist: function(element, errors){
@@ -317,7 +320,7 @@
         var errorContainerClass = element.form.settings.errorContainerClass;
         var errorlistClass = element.form.settings.errorlistClass;
         element.object.removeClass(errorClass).removeClass(validClass);
-        element.container.removeClass(errorContainerClass);
+        element.container.removeClass(errorContainerClass).removeClass(validClass);
         element.container.find("." + errorlistClass).remove();
       },
       
@@ -398,10 +401,10 @@
         element.object.unbind("keyup");
         element.attach("keyup");
         element.valid = false;
-      }
-
-      if(element.value() !== undefined && element.value().length > 0){
-        element.valid = true;
+      } else{
+        if(element.value() !== undefined && element.value().length > 0){
+          element.valid = true;
+        }
       }
 
       element.form.displayValidation(element);

@@ -9,6 +9,22 @@
 	<script type="text/javascript">
     $(document).ready(function($){
       $("#myform").validatorForm();
+      $("#clean-form").validatorForm({
+        input: {
+          "name": {
+            validation: "required"
+          },
+          "email": {
+            validation: "required",
+            required: function(){
+              return $("#check-email").is(":checked");
+            }
+          },
+          "active": {
+            validation: "required"
+          }
+        }
+      });
     });
   </script>
 </head>

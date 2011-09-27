@@ -5,7 +5,6 @@ input[type=password].error{
   border:  1px red dotted;
 }
 
-
 .valid{
   border:  1px green solid;
 }
