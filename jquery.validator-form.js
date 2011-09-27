@@ -167,11 +167,29 @@
       this.elements = [];
     },
 
-    element: function(object){
+    element: function(identifier){
+      if($.type(identifier) == "string"){
+        return this.elementByName(identifier);
+      } else if($.type(identifier) == "object"){
+        return this.elementByObject(identifier);
+      } else{
+        return undefined;
+      }
+    },
+
+    elementByObject: function(object){
       var form = this;
       var htmlElement = $(object)[0];
       for(var i in form.elements) {
         if(form.elements[i].object[0] == htmlElement)
+          return form.elements[i];
+      }
+    },
+
+    elementByName: function(name){
+      var form = this;
+      for(var i in form.elements) {
+        if(form.elements[i].name == name)
           return form.elements[i];
       }
     },
@@ -308,23 +326,29 @@
       },
 
       getValue: function(element){
-        switch(element.type){
-          case "radio":
-            var name = element.object.attr("name");
-            var radioObject = element.form.currentForm.find("[name=" + name + "]:checked");
-            return radioObject.val();
-          case "checkbox":
-            // if there is a hidden fallback option return that value
-            if(element.object.is(":checked")){
-               return element.object.val();
-            }else{
-              var name = element.object.attr("name");
-              var hiddenObject = element.form.currentForm.find("[type=hidden][name=" + name + "]");
-              return $(hiddenObject).val();
+
+        var value;
+
+        if(element.type == "radio"){
+          $.each(element.object, function(i, htmlElement){
+            var object = $(htmlElement);
+            if(object.is(":checked")){
+              value = object.val();
             }
-          default:
-            return element.object.val();
+          });
+        } else if (element.type == "checkbox"){
+          // if there is a hidden fallback option return that value
+          if(element.object.is(":checked")){
+             value = element.object.val();
+          } else {
+            var name = element.object.attr("name");
+            var hiddenObject = element.form.currentForm.find("[type=hidden][name=" + name + "]");
+            value = $(hiddenObject).val();
+          }
+        } else {
+          value = element.object.val();
         }
+        return value;
       }
     }
   };
@@ -334,6 +358,7 @@
   ValidatorElement = function(object, form) {
     this.form = form;
     this.object = object;
+    this.name = object.attr("name");
     this.type = this.inputType();
     this.valid = false;
     this.errors = [];

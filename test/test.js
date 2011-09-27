@@ -120,10 +120,15 @@ test("ValidatorElement :: Radiobuttons", function() {
   $(radioButtons).attr("checked", false);
   ok( element.value() == undefined , "Radio");
 
-  $(radioButtons[0]).attr("checked", 'checked');
+  $(radioButtons[0]).attr("checked", true);
+  console.log(form.methods.getValue(element));
+  console.log(radioButtons[0]);
   ok( element.value() == $(radioButtons[0]).val() , "Radio");
 
-  $(radioButtons[1]).attr("checked", 'checked');
+  $(radioButtons[0]).attr("checked", false);
+  $(radioButtons[1]).attr("checked", true);
+  console.log(element.value());
+  console.log(radioButtons[1]);
   ok( element.value() == $(radioButtons[1]).val() , "Radio");
 
   form.destroy();
@@ -141,20 +146,33 @@ test("ValidatorElement :: Radiobuttons :: Clean", function() {
     }
   });
 
+  var element = cleanForm.element("active");
+
   $($("#clean-form [name=active]")).attr("checked", false);
+  ok(element.validate() === false, "Radio buttons should not validate without a checked button");
 
+  $($("#clean-active_true")).attr("checked", true);
+  ok(element.validate() === true, "Radio element should validate with first button checked");
+
+  $($("#clean-active_false")).attr("checked", true);
+  ok(element.validate() === true, "Radio element should validate with second button checked");
+
+  $($("#clean-form [name=active]")).attr("checked", false);
   cleanForm.validate();
-
   ok(!cleanForm.isValid(), "form not valid because no radio button is selected");
-
   $("#clean-active_true").attr("checked", true);
   
   cleanForm.validate();
   ok(cleanForm.isValid(), "form should be valid");
 
+  $("#clean-active_false").attr("checked", true);
+  cleanForm.validate();
+  ok(cleanForm.isValid(), "form should still be valid");
+
   cleanForm.destroy();
 
 });
+
 
 test("Validator :: addRule & getRule", function() {
   ok( ($.type($.validator.getRule("test")) == "undefined") , "getRule should not return");
