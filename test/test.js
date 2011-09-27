@@ -112,6 +112,7 @@ test("ValidatorElement :: getValue :: text", function() {
 });
 
 test("ValidatorElement :: Radiobuttons", function() {
+
   var form = $("#myform").validatorForm();
   var radioButtons = $("#myform [name=active]");
   var element = form.element($("#active_true"));
@@ -126,6 +127,33 @@ test("ValidatorElement :: Radiobuttons", function() {
   ok( element.value() == $(radioButtons[1]).val() , "Radio");
 
   form.destroy();
+
+});
+
+
+test("ValidatorElement :: Radiobuttons :: Clean", function() {
+
+  var cleanForm = $("#clean-form").validatorForm({
+    input: {
+      "active": {
+        validation: "required"
+      }
+    }
+  });
+
+  $($("#clean-form [name=active]")).attr("checked", false);
+
+  cleanForm.validate();
+
+  ok(!cleanForm.isValid(), "form not valid because no radio button is selected");
+
+  $("#clean-active_true").attr("checked", true);
+  
+  cleanForm.validate();
+  ok(cleanForm.isValid(), "form should be valid");
+
+  cleanForm.destroy();
+
 });
 
 test("Validator :: addRule & getRule", function() {
@@ -153,4 +181,5 @@ test("Validator :: conditions", function() {
   cleanForm.validate();
   ok( !cleanForm.isValid(), "form should not be valid");
 
+  cleanForm.destroy();
 });

@@ -9,11 +9,6 @@
 	<script type="text/javascript" src="../qunit/qunit.js"></script>
   <link rel="stylesheet" href="style.css" type="text/css" media="screen">
 	<script type="text/javascript" src="test.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function($){
-      $("#myform").validatorForm();
-    });
-  </script>
 </head>
 <body>
 	<h1 id="qunit-header">QUnit Test Suite</h1>
@@ -93,6 +88,14 @@
         <label for="clean-email">Email</label><br/>
         <input type="text" value="" name="email" id="clean-email" />
       </p>
+
+      <p class="form-group">
+        <label id="clean-active">Active?</label><br />
+    		<input type="radio" value="true" id="clean-active_true" name="active" />
+    		<label for="clean-active_true">Ja</label><br />
+    		<input type="radio" value="false" id="clean-active_false" name="active" />
+    		<label for="clean-active_false">Nee</label>
+    	</p>
 
       <input type="submit" value="Verstuur" />
 

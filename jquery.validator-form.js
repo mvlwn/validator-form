@@ -186,27 +186,17 @@
 
     collectElements: function(){
       var form = this;
-      var currentForm = this.currentForm;
-      var validationAttribute = this.settings.validationAttribute;
       var elements = [];
 
       form.setupInputFromElements();
       form.setupElementsFromInput();
 
-      currentForm.find("[" + validationAttribute + "]").each(function() {
-        var object = $(this);
-        if(object.attr(validationAttribute) !== undefined) {
-          if(object.attr("type") == "radio"){
-//            var radioObjects = form.findByName(object.attr("name"));
-            elements.push(new ValidatorElement(object, form));
-//            $.each(radioObjects, function(){
-//              var radioObject = $(this);
-//              radioObject.attr(validationAttribute, object.attr(validationAttribute));
-//              elements.push(new ValidatorElement(radioObject, form));
-//            })
-          }else{
-            elements.push(new ValidatorElement(object, form));
-          }
+      var input = this.settings.input;
+
+      $.each(input, function(name, options) {
+        var object = form.findByName(name);
+        if(options.validation !== undefined) {
+          elements.push(new ValidatorElement(object, form));
         }
       });
       return elements;
@@ -416,14 +406,14 @@
     
     errorsFromValidation: function(e){
       var element = this;
-      var validationAttribute = element.form.settings.validationAttribute;
-
+      
+//      var validationAttribute = element.form.settings.validationAttribute;
 //    @todo after tests, the script seems broken
-      if(!element.object.attr(validationAttribute)){
+//      if(!element.object.attr(validationAttribute)){
 //        console.log(element.object);
-      }
+//      }
 
-      var types = element.object.attr(validationAttribute).split(" ");
+      var types = element.input.validation.split(" ");
       var errors = [];
       for (var i in types) {
         var rule = $.validator.getRule(types[i]);
