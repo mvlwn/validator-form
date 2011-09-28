@@ -2,96 +2,43 @@
 (function($) {
 
   Validator = function(){
-    var rules = {
-      required: {
-        check: function(element, event){
-          var object = element.object;
-          var required = element.input["required"];
-
-          if(callCondition(required) === false){
-            return undefined;
-          }
-          
-          var value = element.value();
-          var length = 0;
-
-          // could be an array for select-multiple or a string, both are fine this way
-          if(element.type == "select"){
-            var val = object.val();
-            length = val.length;
-          } else {
-            length = $.trim(value).length;
-          }
-
-          if(event == undefined || event.type == "submit"){
-            return length > 0;
-          }
-        },
-        msg: "Dit veld is verplicht"
-      },
-      format: {
-        check: function(element, event){
-
-          var pattern = element.input["pattern"];
-          var value = element.value();
-          var result = undefined;
-
-          if(value == undefined || value.length == 0)
-            return;
-
-          var testPattern = function(value, pattern){
-            var regExp = new RegExp(pattern, "");
-            return regExp.test(value);
-          };
-
-          if(event == undefined || event.type == "submit" || event.type == "change"){
-            if(pattern){
-              result = testPattern(value, pattern);
-            }
-          }
-          
-          return result;
-        },
-        msg: "De inhoud van dit veld klopt niet"
-      },
-      maxlength: {
-        check: function(element, event){
-          var object = element.object;
-          var length = element.value().length;
-          var maxlength = object.attr("data-maxlength");
-          return (length > maxlength);
-        },
-        msg: "Het veld bestaat uit te veel karakters"
-      },
-      minlength: {
-        check: function(element, event){
-          var object = element.object;
-          var length = element.value().length;
-          var minlength = object.attr("data-maxlength");
-          return (length < minlength);
-        },
-        msg: "Het veld moet uit meer karakters bestaan"
-      }
-    };
-
-    var callCondition = function(condition){
-      if (condition === undefined){
-        return true;
-      } else if($.type(condition) == "boolean"){
-        return condition;
-      } else if($.type(condition) == "function"){
-        return condition.call();
-      } else {
-        console.error("Condition was not a valid type: " + condition );
-      }
-    };
-
+    var rules = {};
     return {
       addRule: function(name, rule){
         rules[name] = rule;
       },
       getRule: function(name){
         return rules[name];
+      }
+    }
+  };
+
+  ValidatorRule = function(options){
+
+    var defaults = {
+      check: function(){ return true },
+      errorMessage: "There has been an error",
+      checkCondition: function(condition){
+        if (condition === undefined){
+          return true;
+        } else if($.type(condition) == "boolean"){
+          return condition;
+        } else if($.type(condition) == "function"){
+          return condition.call();
+        } else {
+          console.error("Condition was not a valid type: " + condition );
+        }
+      }
+    };
+
+    var methods = $.extend({}, defaults, options);
+
+    return {
+      check: function(element, event){
+        return methods.check(element, event);
+      },
+      msg: function(){
+        return methods.errorMessage;
       }
     }
   };
@@ -354,8 +301,6 @@
     }
   };
 
-//  Constructor ValidatorElement
-
   ValidatorElement = function(object, form) {
     this.form = form;
     this.object = object;
@@ -445,7 +390,7 @@
         var rule = $.validator.getRule(types[i]);
         var result = rule.check(element, e);
         if(result === false) {
-          errors.push(rule.msg);
+          errors.push(rule.msg());
         }
       }
       return errors;
@@ -453,6 +398,7 @@
     
   };
 
+  /* Extend jQuery  */
   $.extend($.fn, {
 
     validatorForm: function( options ) {
@@ -476,7 +422,87 @@
   });
   
   $.validator = new Validator();
+  $.rule = function(options){
+    return new ValidatorRule(options);
+  };
 
+  /* ******** RULES ********** */
+
+  $.validator.addRule("required", $.rule({
+    check: function(element, event){
+      var rule = this;
+      rule.errorMessage = "This field is required";
+
+      var object = element.object;
+      var required = element.input["required"];
+
+      if(rule.checkCondition(required) === false){
+        return undefined;
+      }
+
+      var value = element.value();
+      var length = 0;
+
+      // could be an array for select-multiple or a string, both are fine this way
+      if(element.type == "select"){
+        var val = object.val();
+        length = val.length;
+      } else {
+        length = $.trim(value).length;
+      }
+
+      if(event == undefined || event.type == "submit"){
+        return length > 0;
+      }
+    }
+  }));
+
+  $.validator.addRule("format", $.rule({
+    check: function(element, event){
+
+      var pattern = element.input["pattern"];
+      var value = element.value();
+      var result = undefined;
+
+      if(value == undefined || value.length == 0)
+        return;
+
+      var testPattern = function(value, pattern){
+        var regExp = new RegExp(pattern, "");
+        return regExp.test(value);
+      };
+
+      if(event == undefined || event.type == "submit" || event.type == "change"){
+        if(pattern){
+          result = testPattern(value, pattern);
+        }
+      }
+
+      return result;
+    },
+    errorMessage: "The format of the field is not correct"
+  }));
+
+  $.validator.addRule("maxlength", $.rule({
+    check: function(element, event){
+      var object = element.object;
+      var length = element.value().length;
+      var maxlength = object.attr("data-maxlength");
+      return (length > maxlength);
+    },
+    errorMessage: "The contents of the field is too long"
+  }));
+
+  $.validator.addRule("minlength", $.rule({
+    check: function(element, event){
+      var object = element.object;
+      var length = element.value().length;
+      var minlength = object.attr("data-maxlength");
+      return (length < minlength);
+    },
+    errorMessage: "The contents of the field is too short"
+  }));
+  
 })(jQuery);
 
 (function($) {

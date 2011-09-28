@@ -12,7 +12,8 @@
       $("#clean-form").validatorForm({
         input: {
           "name": {
-            validation: "required"
+            validation: "required format",
+            pattern: "^[a-zA-Z ]{1,50}$"
           },
           "email": {
             validation: "required",
