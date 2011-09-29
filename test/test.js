@@ -50,6 +50,20 @@ test("ValidatorForm :: elements", function() {
   form.destroy();
 });
 
+test("ValidatorForm :: elements :: focus", function() {
+  var form = $("#myform").validatorForm();
+  var nameElement = form.element("name");
+  var emailElement = form.element("email");
+
+  nameElement.object.focus();
+  ok( (form.focusedElement == nameElement)  , "name should be focused");
+
+  emailElement.object.focus();
+  ok( (form.focusedElement == emailElement)  , "name should be focused");
+
+  form.destroy();
+});
+
 test("ValidatorForm :: elements :: finding elements", function() {
   var form = $("#myform").validatorForm();
   var element = form.element($("#name"));
@@ -68,6 +82,48 @@ test("ValidatorForm :: validate", function() {
   var form = $("#myform").validatorForm();
   var result = form.validate();
   ok( (form.elements.length > 0) , "should return true or false");
+  form.destroy();
+});
+
+test("ValidatorForm :: Callbacks :: beforeValidate & afterValidate", function() {
+  var form = $("#clean-form").validatorForm({
+    input: {
+      "name": {
+        validation: "required"
+      }
+    },
+    beforeValidate: function(form, event){ form.currentForm.addClass("beforeValidate"); },
+    afterValidate: function(form, event){ form.currentForm.addClass("afterValidate"); }
+  });
+
+  form.validate();
+
+  ok( form.currentForm.hasClass("beforeValidate") && form.currentForm.hasClass("afterValidate") ,
+      "validate should trigger beforeValidate and afterValidate callback");
+  
+  form.destroy();
+});
+
+test("ValidatorForm :: Callbacks :: beforeSubmit & afterSubmitFailed & & afterSubmitSuccess", function() {
+  var form = $("#clean-form").validatorForm({
+    input: {
+      "name": {
+        validation: "required"
+      }
+    },
+    beforeSubmit: function(form, event){ form.currentForm.addClass("beforeSubmit"); console.log(event); },
+    afterSubmitFailed: function(form, event){ form.currentForm.addClass("afterSubmitFailed"); console.log(event); },
+    afterSubmitSuccess: function(form, event){ form.currentForm.addClass("afterSubmitSuccess"); console.log(event); }
+  });
+
+  form.currentForm.submit();
+  ok( form.currentForm.hasClass("beforeSubmit"), "validate should trigger beforeSubmit");
+  ok( form.currentForm.hasClass("afterSubmitFailed"), "validate should trigger afterSubmitFailed");
+
+  form.element("name").object.val("something");
+  form.currentForm.submit();
+  ok( form.currentForm.hasClass("afterSubmitSuccess"), "validate should trigger afterSubmitSuccess");
+
   form.destroy();
 });
 
@@ -144,24 +200,29 @@ test("ValidatorElement :: Radiobuttons :: Clean", function() {
 
   var element = cleanForm.element("active");
 
-  $($("#clean-form [name=active]")).attr("checked", false);
+  $("#clean-form [name=active]").attr("checked", false);
   ok(element.validate() === false, "Radio buttons should not validate without a checked button");
 
-  $($("#clean-active_true")).attr("checked", true);
+  $("#clean-active_true").attr("checked", 'check`ed');
+  $("#clean-active_false").attr("checked", '');
   ok(element.validate() === true, "Radio element should validate with first button checked");
 
-  $($("#clean-active_false")).attr("checked", true);
+  $("#clean-active_true").attr("checked", '');
+  $("#clean-active_false").attr("checked", 'checked');
   ok(element.validate() === true, "Radio element should validate with second button checked");
 
-  $($("#clean-form [name=active]")).attr("checked", false);
+  $("#clean-active_true").attr("checked", false);
+  $("#clean-active_false").attr("checked", false);
+
   cleanForm.validate();
+
   ok(!cleanForm.isValid(), "form not valid because no radio button is selected");
-  $("#clean-active_true").attr("checked", true);
+  $("#clean-active_true").attr("checked", 'checked');
   
   cleanForm.validate();
   ok(cleanForm.isValid(), "form should be valid");
 
-  $("#clean-active_false").attr("checked", true);
+  $("#clean-active_false").attr("checked", 'checked');
   cleanForm.validate();
   ok(cleanForm.isValid(), "form should still be valid");
 
@@ -177,6 +238,9 @@ test("Validator :: addRule & getRule", function() {
 });
 
 test("Validator :: conditions", function() {
+
+  $("#clean-form [name=active]").attr("checked", false);
+
   var cleanForm = $("#clean-form").validatorForm({
     input: {
       "email": {
@@ -192,6 +256,7 @@ test("Validator :: conditions", function() {
   ok( cleanForm.isValid() , "form should be valid");
 
   $("input#check-email").attr("checked", "checked");
+
   cleanForm.validate();
   ok( !cleanForm.isValid(), "form should not be valid");
 

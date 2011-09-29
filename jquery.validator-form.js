@@ -2,22 +2,31 @@
 (function($) {
 
   Validator = function(){
+
     var rules = {};
+
     return {
       addRule: function(name, rule){
         rules[name] = rule;
       },
       getRule: function(name){
         return rules[name];
+      },
+      messages: {
+        required: "This field is required",
+        format: "The format of the field is not correct",
+        maxlength: "The contents of the field is too long",
+        minlength: "The contents of the field is too short"
       }
     }
+    
   };
 
   ValidatorRule = function(options){
 
     var defaults = {
       check: function(){ return true },
-      errorMessage: "There has been an error",
+      errorMessage: function(){ return "This field contains an error" },
       checkCondition: function(condition){
         if (condition === undefined){
           return true;
@@ -38,7 +47,7 @@
         return methods.check(element, event);
       },
       msg: function(){
-        return methods.errorMessage;
+        return methods.errorMessage();
       }
     }
   };
@@ -46,7 +55,7 @@
   ValidatorForm = function(object, options) {
     var form = this;
     this.currentForm = object;
-    this.settings = $.extend({}, this.defaults, options);
+    this.settings = $.extend(true, {}, this.defaults, options);
     this.elements = this.collectElements();
     this.errors = {};
     this.save();
@@ -55,9 +64,13 @@
   	this.currentForm.attr('novalidate', 'novalidate');
 
     this.currentForm.bind("submit", function(e) {
+      form.settings.beforeSubmit(form, e);
       form.validate(e);
       if(!form.isValid()) {
+        form.settings.afterSubmitFailed(form, e);
         e.preventDefault();
+      }else{
+        form.settings.afterSubmitSuccess(form, e);
       }
     });
   };
@@ -72,29 +85,24 @@
       validClass: "valid",
       formGroupClass: 'form-group',
       validationAttribute: 'data-validation',
-      element: {},
-      input: {}
+      elements: {},
+      focusedElement: undefined,
+      input: {},
+      beforeValidate: function(form, event){},
+      afterValidate: function(form, event){},
+      beforeSubmit: function(form){},
+      afterSubmitFailed: function(form){},
+      afterSubmitSuccess: function(form){}
     },
 
     validate: function(e) {
-      var form = this;
-      form.errors = {};
-      for(var i in this.elements) {
-        var element = this.elements[i];
-        if(!element.validate(e)){
-          form.errors[element.object.attr("name")] = element.errors;
-        }
-      }
+      this.settings.beforeValidate(this, e);
+      this.methods.validate(this, e);
+      this.settings.afterValidate(this, e);
     },
 
     isValid: function() {
-      for(var i in this.elements) {
-        if(this.elements[i].valid === false) {
-          this.elements[i].object.focus();
-          return false;
-        }
-      }
-      return true;
+      return this.methods.isValid(this);
     },
 
     save: function(){
@@ -109,7 +117,8 @@
     reset: function(){
       this.settings = [];
       for(var i in this.elements) {
-        this.elements[i].object.val("");
+        var object = this.elements[i].object;
+        object.val("").attr("checked", false);
       }
       this.elements = [];
     },
@@ -160,8 +169,12 @@
 
       $.each(input, function(name, options) {
         var object = form.findByName(name);
-        if(options.validation !== undefined) {
-          elements.push(new ValidatorElement(object, form));
+        if(object.length == 0){
+          console.error("No objects found for: " + name);
+        } else {
+          if(options["validation"] !== undefined) {
+           elements.push(new ValidatorElement(object, form));
+          }
         }
       });
       return elements;
@@ -233,6 +246,26 @@
     },
 
     methods: {
+
+      validate: function(form, event){
+        form.errors = {};
+        for(var i in form.elements) {
+          var element = form.elements[i];
+          if(!element.validate(event)){
+            form.errors[element.object.attr("name")] = element.errors;
+          }
+        }
+      },
+
+      isValid: function(form){
+        for(var i in form.elements) {
+          if(form.elements[i].valid === false) {
+            form.elements[i].object.focus();
+            return false;
+          }
+        }
+        return true;
+      },
 
       displayValidationSuccess: function(element){
         var validClass = element.form.settings.validClass;
@@ -309,6 +342,7 @@
     this.valid = false;
     this.errors = [];
     this.attach("change");
+    this.attach("focus");
     this.container = form.container(this);
     this.input = this.form.settings.input[object.attr("name")];
     this.settings = $.extend({}, this.defaults, form.settings.elementOptions);
@@ -326,6 +360,12 @@
         });
       }
 
+      if(event == "focus"){
+        element.object.bind("focus", function(e){
+          element.form.focusedElement = element;
+        })
+      }
+
 //      if(event == "keyup") {
 //        element.object.bind("keyup",function(e) {
 //          return element.validate(e);
@@ -336,13 +376,14 @@
 
     validate : function(e) {
       var element = this;
-      element.errors = this.errorsFromValidation(e);
-      element.valid = null;
+      element.errors = element.errorsFromValidation(e);
+      element.valid = undefined;
       element.form.cleanElement(element);
 
+
       if(element.errors.length > 0) {
-        element.object.unbind("keyup");
-        element.attach("keyup");
+//        element.object.unbind("keyup");
+//        element.attach("keyup");
         element.valid = false;
       } else{
         if(element.value() !== undefined && element.value().length > 0){
@@ -351,7 +392,6 @@
       }
 
       element.form.displayValidation(element);
-
       return element.valid;
     },
 
@@ -365,6 +405,7 @@
 
     inputType: function(){
       var object = this.object;
+
       switch( object[0].nodeName.toLowerCase() ) {
       case 'select':
         return "select";
@@ -377,14 +418,7 @@
     
     errorsFromValidation: function(e){
       var element = this;
-      
-//      var validationAttribute = element.form.settings.validationAttribute;
-//    @todo after tests, the script seems broken
-//      if(!element.object.attr(validationAttribute)){
-//        console.log(element.object);
-//      }
-
-      var types = element.input.validation.split(" ");
+      var types = element.input["validation"].split(" ");
       var errors = [];
       for (var i in types) {
         var rule = $.validator.getRule(types[i]);
@@ -422,6 +456,10 @@
   });
   
   $.validator = new Validator();
+  $.extend($.validator.messages, {
+    
+  });
+
   $.rule = function(options){
     return new ValidatorRule(options);
   };
@@ -430,9 +468,8 @@
 
   $.validator.addRule("required", $.rule({
     check: function(element, event){
-      var rule = this;
-      rule.errorMessage = "This field is required";
 
+      var rule = this;
       var object = element.object;
       var required = element.input["required"];
 
@@ -454,7 +491,8 @@
       if(event == undefined || event.type == "submit"){
         return length > 0;
       }
-    }
+    },
+    errorMessage: function(){ return $.validator.messages.required }
   }));
 
   $.validator.addRule("format", $.rule({
@@ -480,7 +518,7 @@
 
       return result;
     },
-    errorMessage: "The format of the field is not correct"
+    errorMessage: function(){ return $.validator.messages.format }
   }));
 
   $.validator.addRule("maxlength", $.rule({
@@ -490,7 +528,7 @@
       var maxlength = object.attr("data-maxlength");
       return (length > maxlength);
     },
-    errorMessage: "The contents of the field is too long"
+    errorMessage: function(){ return $.validator.messages.maxlength }
   }));
 
   $.validator.addRule("minlength", $.rule({
@@ -500,7 +538,7 @@
       var minlength = object.attr("data-maxlength");
       return (length < minlength);
     },
-    errorMessage: "The contents of the field is too short"
+    errorMessage: function(){ return $.validator.messages.minlength }
   }));
   
 })(jQuery);
