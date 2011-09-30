@@ -164,7 +164,7 @@ The handler-function should look something like this:
 ### jQuery events on Validator elements
 
 All jQuery events can be used. While creating the element, the jQuery object will bind this event.
-Full list of events can be found here: [[http://api.jquery.com/category/events/]]
+Full list of events can be found here: http://api.jquery.com/category/events/
 
 ```
   $("#myform").validatorForm({
