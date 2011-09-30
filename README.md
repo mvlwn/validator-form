@@ -23,7 +23,8 @@ The script has been tested with jQuery 1.6 on IE8, Firefox 6,7, Safari 5 and Chr
       }
     }
   });
-
+```
+```html
   <form id="myform" action="#" method="post" onsubmit="return false;">
    	<p>
    		<label for="name">Name</label><br/>
@@ -45,7 +46,8 @@ The required validation will only be triggered if this checkbox is checked.
       }
     }
   });
-
+```
+```html
   <form id="myform" action="#" method="post" onsubmit="return false;">
     <p>
    		<label for="check-name">Check name</label><br/>
@@ -62,7 +64,8 @@ The required validation will only be triggered if this checkbox is checked.
 
 ```javascript
   $("#myform").validatorForm();
-
+```
+```html
   <form id="myform" action="#" method="post" onsubmit="return false;">
    	<p>
    		<label for="name">Name</label><br/>
@@ -78,7 +81,7 @@ The required validation will only be triggered if this checkbox is checked.
 
 By default the errorlist will be a list. The output will look like this:
 
-```javascript
+```html
   <form id="myform" action="#" method="post" onsubmit="return false;">
    	<p class="error">
    		<label for="name">Name</label><br/>
