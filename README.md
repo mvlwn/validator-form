@@ -14,7 +14,7 @@ The script has been tested with jQuery 1.6 on IE8, Firefox 6,7, Safari 5 and Chr
 
 ### Simple form
 
-```
+```javascript
   $("#myform").validatorForm({
     input: {
       "name": {
@@ -36,7 +36,7 @@ The script has been tested with jQuery 1.6 on IE8, Firefox 6,7, Safari 5 and Chr
 
 The required validation will only be triggered if this checkbox is checked.
 
-```
+```javascript
   $("#myform").validatorForm({
     input: {
       "name": {
@@ -60,7 +60,7 @@ The required validation will only be triggered if this checkbox is checked.
 
 ### HTML-attribute conditions
 
-```
+```javascript
   $("#myform").validatorForm();
 
   <form id="myform" action="#" method="post" onsubmit="return false;">
@@ -78,7 +78,7 @@ The required validation will only be triggered if this checkbox is checked.
 
 By default the errorlist will be a list. The output will look like this:
 
-```
+```javascript
   <form id="myform" action="#" method="post" onsubmit="return false;">
    	<p class="error">
    		<label for="name">Name</label><br/>
@@ -95,7 +95,7 @@ By default the errorlist will be a list. The output will look like this:
 
 Return an alertbox and give the object an highlight the field with the error classname
 
-```
+```javascript
   $("#myform").validatorForm({
     input: {
       "name": {
@@ -133,7 +133,7 @@ The handlers will be called when the form does certain events. The following lis
 
 The handler-function should look something like this:
 
-```
+```javascript
   $("#myform").validatorForm({
     input: {
       "name": {
@@ -166,7 +166,7 @@ The handler-function should look something like this:
 All jQuery events can be used. While creating the element, the jQuery object will bind this event.
 Full list of events can be found here: http://api.jquery.com/category/events/
 
-```
+```javascript
   $("#myform").validatorForm({
     input: {
       "name": {
