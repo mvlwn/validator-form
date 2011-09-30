@@ -50,10 +50,13 @@
         return methods.errorMessage();
       }
     }
+    
   };
 
   ValidatorForm = function(object, options) {
+
     var form = this;
+
     this.currentForm = object;
     this.settings = $.extend(true, {}, this.defaults, options);
     this.elements = this.collectElements();
@@ -73,6 +76,7 @@
         form.settings.afterSubmitSuccess(form, e);
       }
     });
+
   };
 
   ValidatorForm.prototype = {
@@ -332,6 +336,7 @@
         return value;
       }
     }
+    
   };
 
   ValidatorElement = function(object, form) {
@@ -343,6 +348,7 @@
     this.errors = [];
     this.attach("change");
     this.attach("focus");
+    this.attachCustomEvents(form.settings.events);
     this.container = form.container(this);
     this.input = this.form.settings.input[object.attr("name")];
     this.settings = $.extend({}, this.defaults, form.settings.elementOptions);
@@ -374,12 +380,21 @@
 
     },
 
+    attachCustomEvents: function(events){
+      if(!events)
+        return;
+      var element = this;
+      var object = element.object;
+      $.each(events, function(name, action){
+        object.bind(name, action);
+      });
+    },
+
     validate : function(e) {
       var element = this;
       element.errors = element.errorsFromValidation(e);
       element.valid = undefined;
       element.form.cleanElement(element);
-
 
       if(element.errors.length > 0) {
 //        element.object.unbind("keyup");
@@ -541,44 +556,4 @@
     errorMessage: function(){ return $.validator.messages.minlength }
   }));
   
-})(jQuery);
-
-(function($) {
-	// only implement if not provided by jQuery core (since 1.4)
-	// TODO verify if jQuery 1.4's implementation is compatible with older jQuery special-event APIs
-	if (!jQuery.event.special.focusin && !jQuery.event.special.focusout && document.addEventListener) {
-		$.each({
-			focus: 'focusin',
-			blur: 'focusout'
-		}, function( original, fix ){
-			$.event.special[fix] = {
-				setup:function() {
-					this.addEventListener( original, handler, true );
-				},
-				teardown:function() {
-					this.removeEventListener( original, handler, true );
-				},
-				handler: function(e) {
-					arguments[0] = $.event.fix(e);
-					arguments[0].type = fix;
-					return $.event.handle.apply(this, arguments);
-				}
-			};
-			function handler(e) {
-				e = $.event.fix(e);
-				e.type = fix;
-				return $.event.handle.call(this, e);
-			}
-		});
-	}
-	$.extend($.fn, {
-		validateDelegate: function(delegate, type, handler) {
-			return this.bind(type, function(event) {
-				var target = $(event.target);
-				if (target.is(delegate)) {
-					return handler.apply(target, arguments);
-				}
-			});
-		}
-	});
 })(jQuery);

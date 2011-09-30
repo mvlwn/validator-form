@@ -15,7 +15,6 @@ test("ValidatorForm :: settings", function() {
 
   // Options
   var form2 = $("#myform").validatorForm({formGroupClass: "group"});
-//  console.log($(form2.settings));
   ok( (form2.settings.formGroupClass != "form-group"), "When options are give, it should overwrite the default");
   ok( (form2.settings.formGroupClass == "group"), "New formGroupClass should be 'group'");
 
@@ -111,9 +110,9 @@ test("ValidatorForm :: Callbacks :: beforeSubmit & afterSubmitFailed & & afterSu
         validation: "required"
       }
     },
-    beforeSubmit: function(form, event){ form.currentForm.addClass("beforeSubmit"); console.log(event); },
-    afterSubmitFailed: function(form, event){ form.currentForm.addClass("afterSubmitFailed"); console.log(event); },
-    afterSubmitSuccess: function(form, event){ form.currentForm.addClass("afterSubmitSuccess"); console.log(event); }
+    beforeSubmit: function(form, event){ form.currentForm.addClass("beforeSubmit"); },
+    afterSubmitFailed: function(form, event){ form.currentForm.addClass("afterSubmitFailed"); },
+    afterSubmitSuccess: function(form, event){ form.currentForm.addClass("afterSubmitSuccess"); }
   });
 
   form.currentForm.submit();
@@ -123,6 +122,34 @@ test("ValidatorForm :: Callbacks :: beforeSubmit & afterSubmitFailed & & afterSu
   form.element("name").object.val("something");
   form.currentForm.submit();
   ok( form.currentForm.hasClass("afterSubmitSuccess"), "validate should trigger afterSubmitSuccess");
+
+  form.destroy();
+});
+
+test("ValidatorForm :: Callbacks :: onFocusIn & onFocusOut", function() {
+  var form = $("#clean-form").validatorForm({
+    input: {
+      "name": {
+        validation: "required"
+      }
+    },
+    events: {
+      "focusin": function(){ $(this).addClass("focusin"); },
+      "focusout": function(){ $(this).addClass("focusout"); }
+    }
+  });
+
+  var element = form.element("name");
+  var object = element.object;
+
+  ok( !object.hasClass("focusin") && !object.hasClass("focusout") , "element should not have any focus class");
+
+  element.object.focus();
+  console.log(element.object.attr("class"));
+  ok( object.hasClass("focusin") && !object.hasClass("focusout") , "element should have class onFocusIn when focus()");
+
+  element.object.blur();
+  ok( object.hasClass("focusout") , "element should have class onFocusOut when blur()");
 
   form.destroy();
 });
