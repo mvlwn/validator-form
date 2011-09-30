@@ -84,7 +84,7 @@ test("ValidatorForm :: validate", function() {
   form.destroy();
 });
 
-test("ValidatorForm :: Callbacks :: beforeValidate & afterValidate", function() {
+test("ValidatorForm :: Handlers :: beforeValidate & afterValidate", function() {
   var form = $("#clean-form").validatorForm({
     input: {
       "name": {
@@ -103,7 +103,7 @@ test("ValidatorForm :: Callbacks :: beforeValidate & afterValidate", function() 
   form.destroy();
 });
 
-test("ValidatorForm :: Callbacks :: beforeSubmit & afterSubmitFailed & & afterSubmitSuccess", function() {
+test("ValidatorForm :: Handlers :: beforeSubmit & afterSubmitFailed & & afterSubmitSuccess", function() {
   var form = $("#clean-form").validatorForm({
     input: {
       "name": {
@@ -126,7 +126,7 @@ test("ValidatorForm :: Callbacks :: beforeSubmit & afterSubmitFailed & & afterSu
   form.destroy();
 });
 
-test("ValidatorForm :: Callbacks :: onFocusIn & onFocusOut", function() {
+test("ValidatorForm :: Handlers :: onFocusIn & onFocusOut", function() {
   var form = $("#clean-form").validatorForm({
     input: {
       "name": {

@@ -8,7 +8,7 @@ and the jQuery Validation From Scratch tutorial (http://webcloud.se/log/Form-val
 
 The goal is to make a lightweight framework for form validation. It should be easy to extend for personal usage.
 
-The script has been tested with jQuery 1.6 on 
+The script has been tested with jQuery 1.6 on IE8, Firefox 6,7, Safari 5 and Chrome 14
 
 ## Basic Usage
 
@@ -76,7 +76,7 @@ The required validation will only be triggered if this checkbox is checked.
 
 ### Default errorlist
 
-The errorlist will be an UL element with all the errors inside LI elements. The default output will look like this:
+By default the errorlist will be a list. The output will look like this:
 
 ```
   <form id="myform" action="#" method="post" onsubmit="return false;">
@@ -115,6 +115,68 @@ Return an alertbox and give the object an highlight the field with the error cla
     }
   });
 
+```
+
+## Handlers
+
+There are 2 types of handlers available. 1 custom handlers for the validatorForm and standard jquery events on the elements.
+
+### ValidatorForm handlers
+
+The handlers will be called when the form does certain events. The following list of handlers are available:
+
+ * beforeValidate
+ * afterValidate
+ * beforeSubmit
+ * afterSubmitFailed
+ * afterSubmitSuccess
+
+The handler-function should look something like this:
+
+```
+  $("#myform").validatorForm({
+    input: {
+      "name": {
+        validation: "required"
+      }
+    },
+    beforeSubmit: beforeSubmitHandler,
+    afterSubmitFailed: afterSubmitFailedHandler
+  });
+
+
+  // disable all fields
+  function beforeSubmitHandler(form, event){
+    $.each(form.elements, function(i, element)){
+      element.object.attr("disabled", "disabled");
+    }
+  }
+
+  // enable all fields on failure
+  function afterSubmitFailedHandler(form, event){
+    $.each(form.elements, function(i, element)){
+      element.object.attr("disabled", "");
+    }
+  }
+
+```
+
+### jQuery events on Validator elements
+
+All jQuery events can be used. While creating the element, the jQuery object will bind this event.
+Full list of events can be found here: [[http://api.jquery.com/category/events/]]
+
+```
+  $("#myform").validatorForm({
+    input: {
+      "name": {
+        validation: "required"
+      }
+    },
+    events: {
+      "focusin": function(){ $(this).effect("highlight", {}, 2000)};
+    }
+  }
 ```
 
 
