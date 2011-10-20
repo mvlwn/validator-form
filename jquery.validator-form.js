@@ -60,6 +60,7 @@
     this.currentForm = object;
     this.settings = $.extend(true, {}, this.defaults, options);
     this.elements = this.collectElements();
+    this.groups = this.collectGroups();
     this.errors = {};
     this.save();
 
@@ -97,6 +98,7 @@
       beforeSubmit: function(form){},
       afterSubmitFailed: function(form){},
       afterSubmitSuccess: function(form){}
+
     },
 
     validate: function(e) {
@@ -182,6 +184,32 @@
         }
       });
       return elements;
+    },
+
+    collectGroups: function(){
+      var form = this;
+      var groups = [];
+      var input = this.settings.input;
+
+      $.each(input, function(name, options) {
+        if(options["group"] !== undefined) {
+          var groupName = options["group"];
+          if(!form.getGroup(groupName))
+            var group = new ValidatorGroup(groupName, form);
+            groups.push(group);
+        }
+      });
+      return groups;
+    },
+
+    getGroup: function(name){
+      var form = this;
+      if(!form.groups)
+        return false;
+      $.each(form.groups, function(i, group){
+        if(group.name == name)
+          return group;
+      });
     },
 
     setupElementsFromInput: function(){
@@ -351,6 +379,7 @@
     this.attachCustomEvents(form.settings.events);
     this.container = form.container(this);
     this.input = this.form.settings.input[object.attr("name")];
+    this.group = function(){ return form.getGroup(this.input.group) };
     this.settings = $.extend({}, this.defaults, form.settings.elementOptions);
   };
       
@@ -362,6 +391,9 @@
 
       if(event == "change") {
         element.object.bind("change",function(e) {
+          var group = element.group();
+          if(group)
+            group.callEvent("change");
           return element.validate(e);
         });
       }
@@ -392,6 +424,8 @@
 
     validate : function(e) {
       var element = this;
+      var group = element.group();
+      element.callHandler("beforeValidate");
       element.errors = element.errorsFromValidation(e);
       element.valid = undefined;
       element.form.cleanElement(element);
@@ -405,8 +439,10 @@
           element.valid = true;
         }
       }
-
+      if(group)
+          group.callEvent((element.valid ? "valid" : "invalid"));
       element.form.displayValidation(element);
+      element.callHandler("afterValidate");
       return element.valid;
     },
 
@@ -443,8 +479,55 @@
         }
       }
       return errors;
+    },
+
+    callHandler: function(handler){
+      var element = this;
+      if($.type(element.input[handler]) == "function"){
+        element.input[handler].call(element);
+      }
     }
     
+  };
+
+  ValidatorGroup = function(name, form, options){
+    this.name = name;
+    this.form = form;
+    this.elements = this.elementsByGroupName();
+    this.events = {
+      "beforechange": function(){},
+      "afterchange": function(){},
+      "onvalid": function(){},
+      "oninvalid": function(){},
+      "beforevalidate": function(){},
+      "aftervalidate": function(){}
+    };
+    if(form.settings.group)
+      $.extend(this.events, form.settings.group["all"], form.settings.group[name]);
+  };
+
+  ValidatorGroup.prototype = {
+    valid: function(){
+      $.each(this.elements, function(i, element){
+        if(element.valid === false){
+          return false;
+        }
+      });
+      return true;
+    },
+    callEvent: function(event){
+      if(this.events[event])
+        this.events.call(event);
+    },
+    elementsByGroupName: function(){
+      var group = this;
+      var elements = [];
+      $.each(group.form.elements, function(i, element){
+        if(element.group == group.name)
+          $(elements).push(element);
+      });
+      return elements;
+    }
   };
 
   /* Extend jQuery  */
@@ -471,9 +554,7 @@
   });
   
   $.validator = new Validator();
-  $.extend($.validator.messages, {
-    
-  });
+
 
   $.rule = function(options){
     return new ValidatorRule(options);

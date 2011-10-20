@@ -33,6 +33,28 @@ The script has been tested with jQuery 1.6 on IE8, Firefox 6,7, Safari 5 and Chr
   </form>
 ```
 
+## Advanced Usage
+
+### Custom Rules
+
+```javascript
+
+  $.validator.addRule("my_custom_rule", function(element, event){
+    var valid = false;
+    // Do stuff to test the result
+    return valid;
+  });
+
+  $("#myform").validatorForm({
+    input: {
+      "name": {
+        validation: "my_custom_rule"
+      }
+    }
+  });
+
+```
+
 ### Conditional Requirement
 
 The required validation will only be triggered if this checkbox is checked.
@@ -161,6 +183,61 @@ The handler-function should look something like this:
       element.object.attr("disabled", "");
     }
   }
+
+```
+
+### ValidatorElement handlers
+
+The handlers will be called when the validate method is called on the element.
+
+ * beforeValidate
+ * afterValidate
+
+The handler-function should look something like this:
+
+```javascript
+  $("#myform").validatorForm({
+    input: {
+      "name": {
+        validation: "required",
+        beforeValidate: function(){
+          // Do stuff here
+        },
+        afterValidate: function(){
+          // Do other stuff here
+        }
+      }
+    }
+  });
+
+```
+
+### Custom ValidatorElement handlers
+
+You can make handlers of your own in your rules.
+
+
+```javascript
+
+  $.validator.addRule("my_custom_rule", function(element, event){
+    element.callHandler("beforeMyCustomRule");
+    var valid = false;
+
+    // Do stuff to test the result
+    return valid;
+  });
+
+  $("#myform").validatorForm({
+    input: {
+      "name": {
+        validation: "my_custom_rule",
+        beforeMyCustomRule: function(){
+          var element = this;
+          // Do something
+        }
+      }
+    }
+  });
 
 ```
 

@@ -154,6 +154,55 @@ test("ValidatorForm :: Handlers :: onFocusIn & onFocusOut", function() {
   form.destroy();
 });
 
+test("ValidatorForm :: Groups", function() {
+
+  var state = "";
+  var form = $("#clean-form").validatorForm({
+    input: {
+      "name": {
+        validation: "required",
+        group: "general"
+      },
+      "email": {
+        validation: "required",
+        group: "general"
+      },
+      "telephone": {
+        validation: "required",
+        group: "contact"
+      },
+      "fax": {
+        validation: "required",
+        group: "contact"
+      }
+    },
+    group:{
+      all: {
+        "change": function(){ state = "all: change"; console.log(state)},
+        "valid": function(){ state = "all: valid"; console.log(state)},
+        "invalid": function(){ state = "all: invalid"; console.log(state)}
+      },
+      "general": {
+        "change": function(){ state = "general: change"; console.log(state)}
+      },
+      "contact": {
+        "change": function(){ state = "contact: change"; console.log(state)},
+        "valid": function(){ state = "contact: valid"; console.log(state)}
+      }
+    }
+  });
+
+  var element = form.element("name");
+  console.log(form.groups);
+  console.log(element.group());
+  console.log(element.input.group);
+  console.log(state);
+  ok( form.validate , "todo");
+
+  form.destroy();
+});
+
+
 test("ValidatorElement :: constructor", function() {
   var form = $("#myform").validatorForm();
   var element = form.element($("#name"));
@@ -257,12 +306,28 @@ test("ValidatorElement :: Radiobuttons :: Clean", function() {
 
 });
 
+test("ValidatorElement :: Handlers :: before & after validate", function() {
 
-test("Validator :: addRule & getRule", function() {
-  ok( ($.type($.validator.getRule("test")) == "undefined") , "getRule should not return");
-  $.validator.addRule("test", function(){});
-  ok( ($.type($.validator.getRule("test")) == "function") , "addRule should add a rule option and getRule should return it");
+  var logger = "";
+
+  var form = $("#clean-form").validatorForm({
+    input: {
+      "name": {
+        validation: "required",
+        beforeValidate: function(){
+          logger = this.name;
+        }
+      }
+    }
+  });
+
+  ok( logger == "" , "beforeValidate or afterValidate should not run on the element without the form validating");
+  form.validate();
+  ok( logger == "name", "the validators should run if the form is validated");
+  form.destroy();
 });
+
+
 
 test("Validator :: conditions", function() {
 
