@@ -216,7 +216,6 @@ The handler-function should look something like this:
 
 You can make handlers of your own in your rules.
 
-
 ```javascript
 
   $.validator.addRule("my_custom_rule", function(element, event){

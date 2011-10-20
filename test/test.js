@@ -58,7 +58,7 @@ test("ValidatorForm :: elements :: focus", function() {
   ok( (form.focusedElement == nameElement)  , "name should be focused");
 
   emailElement.object.focus();
-  ok( (form.focusedElement == emailElement)  , "name should be focused");
+  ok( (form.focusedElement == emailElement)  , "email should be focused");
 
   form.destroy();
 });
@@ -99,7 +99,7 @@ test("ValidatorForm :: Handlers :: beforeValidate & afterValidate", function() {
 
   ok( form.currentForm.hasClass("beforeValidate") && form.currentForm.hasClass("afterValidate") ,
       "validate should trigger beforeValidate and afterValidate callback");
-  
+
   form.destroy();
 });
 
@@ -145,7 +145,6 @@ test("ValidatorForm :: Handlers :: onFocusIn & onFocusOut", function() {
   ok( !object.hasClass("focusin") && !object.hasClass("focusout") , "element should not have any focus class");
 
   element.object.focus();
-  console.log(element.object.attr("class"));
   ok( object.hasClass("focusin") && !object.hasClass("focusout") , "element should have class onFocusIn when focus()");
 
   element.object.blur();
@@ -193,10 +192,6 @@ test("ValidatorForm :: Groups", function() {
   });
 
   var element = form.element("name");
-  console.log(form.groups);
-  console.log(element.group());
-  console.log(element.input.group);
-  console.log(state);
   ok( form.validate , "todo");
 
   form.destroy();

@@ -292,7 +292,7 @@
       isValid: function(form){
         for(var i in form.elements) {
           if(form.elements[i].valid === false) {
-            form.elements[i].object.focus();
+            form.elements[i].object.focusin();
             return false;
           }
         }
@@ -374,9 +374,7 @@
     this.type = this.inputType();
     this.valid = false;
     this.errors = [];
-    this.attach("change");
-    this.attach("focus");
-    this.attachCustomEvents(form.settings.events);
+    this.attachEvents();
     this.container = form.container(this);
     this.input = this.form.settings.input[object.attr("name")];
     this.group = function(){ return form.getGroup(this.input.group) };
@@ -384,12 +382,17 @@
   };
       
   ValidatorElement.prototype = {
-
+    attachEvents: function(){
+      this.attach("change");
+      this.attach("focus");
+      this.attachCustomEvents(this.form.settings.events);
+    },
     attach : function(event) {
 
       var element = this;
 
       if(event == "change") {
+        element.object.unbind("change");
         element.object.bind("change",function(e) {
           var group = element.group();
           if(group)
@@ -399,9 +402,11 @@
       }
 
       if(event == "focus"){
+        element.object.unbind("focus");
         element.object.bind("focus", function(e){
           element.form.focusedElement = element;
-        })
+          return true
+        });
       }
 
 //      if(event == "keyup") {
@@ -418,6 +423,7 @@
       var element = this;
       var object = element.object;
       $.each(events, function(name, action){
+        object.unbind(name);
         object.bind(name, action);
       });
     },
