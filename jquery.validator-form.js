@@ -47,7 +47,11 @@
         return methods.check(element, event);
       },
       msg: function(){
-        return methods.errorMessage();
+        if($.type(methods.errorMessage) == "function"){
+          return methods.errorMessage();
+        } else {
+          return methods.errorMessage;
+        }
       }
     }
     
@@ -71,6 +75,7 @@
       form.settings.beforeSubmit(form, e);
       form.validate(e);
       if(!form.isValid()) {
+        form.focusFirstElementWithError();
         form.settings.afterSubmitFailed(form, e);
         e.preventDefault();
       }else{
@@ -109,6 +114,16 @@
 
     isValid: function() {
       return this.methods.isValid(this);
+    },
+
+    focusFirstElementWithError: function(){
+      var form = this;
+      for(var i in form.elements) {
+        if(form.elements[i].valid === false){
+          form.elements[i].object.focus();
+          return true;
+        }
+      }
     },
 
     save: function(){
@@ -281,7 +296,7 @@
 
       validate: function(form, event){
         form.errors = {};
-        for(var i in form.elements) {
+        for(var i in form.elements){
           var element = form.elements[i];
           if(!element.validate(event)){
             form.errors[element.object.attr("name")] = element.errors;
@@ -291,8 +306,7 @@
 
       isValid: function(form){
         for(var i in form.elements) {
-          if(form.elements[i].valid === false) {
-            form.elements[i].object.focusin();
+          if(form.elements[i].valid === false){
             return false;
           }
         }
@@ -379,12 +393,14 @@
     this.input = this.form.settings.input[object.attr("name")];
     this.group = function(){ return form.getGroup(this.input.group) };
     this.settings = $.extend({}, this.defaults, form.settings.elementOptions);
+    this.callHandler("afterInitialize");
   };
       
   ValidatorElement.prototype = {
     attachEvents: function(){
       this.attach("change");
       this.attach("focus");
+      this.attach("keyup");
       this.attachCustomEvents(this.form.settings.events);
     },
     attach : function(event) {
@@ -392,8 +408,7 @@
       var element = this;
 
       if(event == "change") {
-        element.object.unbind("change");
-        element.object.bind("change",function(e) {
+        element.object.bind("change", function(e) {
           var group = element.group();
           if(group)
             group.callEvent("change");
@@ -402,18 +417,17 @@
       }
 
       if(event == "focus"){
-        element.object.unbind("focus");
         element.object.bind("focus", function(e){
           element.form.focusedElement = element;
           return true
         });
       }
 
-//      if(event == "keyup") {
-//        element.object.bind("keyup",function(e) {
-//          return element.validate(e);
-//        });
-//      }
+      if(event == "keyup") {
+        element.object.bind("keyup", function(e) {
+          element.form.cleanElement(element);
+        });
+      }
 
     },
 
@@ -431,10 +445,11 @@
     validate : function(e) {
       var element = this;
       var group = element.group();
-      element.callHandler("beforeValidate");
+      element.callHandler("beforeValidate", e);
+      element.form.cleanElement(element);
+      element.errors = [];
       element.errors = element.errorsFromValidation(e);
       element.valid = undefined;
-      element.form.cleanElement(element);
 
       if(element.errors.length > 0) {
 //        element.object.unbind("keyup");
@@ -446,9 +461,9 @@
         }
       }
       if(group)
-          group.callEvent((element.valid ? "valid" : "invalid"));
+        group.callEvent((element.valid ? "valid" : "invalid"));
       element.form.displayValidation(element);
-      element.callHandler("afterValidate");
+      element.callHandler("afterValidate", e);
       return element.valid;
     },
 
@@ -487,10 +502,12 @@
       return errors;
     },
 
-    callHandler: function(handler){
+    callHandler: function(handler, event){
       var element = this;
       if($.type(element.input[handler]) == "function"){
-        element.input[handler].call(element);
+        element.input[handler].call(element, event);
+      }else if($.type(element.settings[handler]) == "function"){
+        element.settings[handler].call(element, event);
       }
     }
     
