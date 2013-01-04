@@ -84,6 +84,15 @@ test("ValidatorForm :: validate", function() {
   form.destroy();
 });
 
+
+test("ValidatorForm :: validate :: missing rule", function() {
+  var form = $("#clean-form").validatorForm({input: {"name": {validation: "unknown"}}});
+  var result = !form.isValid();
+  ok( result , "form should not be valid, but not return an error");
+  form.destroy();
+});
+
+
 test("ValidatorForm :: Handlers :: beforeValidate & afterValidate", function() {
   var form = $("#clean-form").validatorForm({
     input: {

@@ -1,6 +1,8 @@
+// @todo: add API documentation
 
 (function($) {
 
+  // 
   Validator = function(){
 
     var rules = {};
@@ -22,6 +24,7 @@
     
   };
 
+  // 
   ValidatorRule = function(options){
 
     var defaults = {
@@ -163,6 +166,9 @@
       }
     },
 
+    // Find element by form name
+    // <input type="text" name="my_form" />
+    // 
     elementByName: function(name){
       var form = this;
       for(var i in form.elements) {
@@ -494,9 +500,13 @@
       var errors = [];
       for (var i in types) {
         var rule = $.validator.getRule(types[i]);
-        var result = rule.check(element, e);
-        if(result === false) {
-          errors.push(rule.msg());
+        try{          
+          if(rule.check(element, e) === false) {
+            errors.push(rule.msg());
+          }
+        }catch(e){          
+          errors.push("No rule found for " + types[i] + '('+ i +')');
+          errors.push("error: " + e);
         }
       }
       return errors;
