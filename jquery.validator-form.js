@@ -125,12 +125,12 @@
 
     focusFirstElementWithError: function() {
       var form = this;
-      for (var i in form.elements) {
-        if (form.elements[i].valid === false) {
-          form.elements[i].object.focus();
+      $.each(form.elements, function(i, element){
+        if (element.valid === false) {
+          element.object.focus();
           return true;
         }
-      }
+      })
     },
 
     save: function() {
@@ -144,11 +144,9 @@
 
     reset: function() {
       this.settings = [];
-      for (var i in this.elements) {
-        var object = this.elements[i].object;
-        object.val("")
-          .attr("checked", false);
-      }
+      $.each(this.elements, function(i, element){
+        element.object.val("").attr("checked", false);
+      })
       this.elements = [];
     },
 
@@ -165,9 +163,15 @@
     elementByObject: function(object) {
       var form = this;
       var htmlElement = $(object)[0];
-      for (var i in form.elements) {
-        if (form.elements[i].object[0] == htmlElement) return form.elements[i];
-      }
+      var returnValue;
+
+      $.each(form.elements, function(i, element){
+        if(element.object[0] == htmlElement){
+          returnValue = element;
+        }
+      })
+      
+      return returnValue;
     },
 
     // Find element by form name
@@ -175,9 +179,15 @@
     // 
     elementByName: function(name) {
       var form = this;
-      for (var i in form.elements) {
-        if (form.elements[i].name == name) return form.elements[i];
-      }
+      var returnValue;
+
+      $.each(form.elements, function(i, element){
+        if(element.name == name){
+          returnValue = element;
+        }
+      })
+      
+      return returnValue;
     },
 
     findByName: function(name) {
@@ -301,21 +311,21 @@
 
       validate: function(form, event) {
         form.errors = {};
-        for (var i in form.elements) {
-          var element = form.elements[i];
+        $.each(form.elements, function(i, element){
           if (!element.validate(event)) {
             form.errors[element.object.attr("name")] = element.errors;
           }
-        }
+        })
       },
 
       isValid: function(form) {
-        for (var i in form.elements) {
-          if (form.elements[i].valid === false) {
-            return false;
+        var returnValue = true;
+        $.each(form.elements, function(i, element){
+          if (element.valid === false) {
+            returnValue = false;
           }
-        }
-        return true;
+        });
+        return returnValue;
       },
 
       displayValidationSuccess: function(element) {
@@ -335,11 +345,12 @@
 
       errorlist: function(element, errors) {
         var errorlistClass = element.form.settings.errorlistClass;
-        var errorlist = $(document.createElement("ul"))
-          .addClass(errorlistClass);
+        var errorlist = $(document.createElement("ul")).addClass(errorlistClass);
         errorlist.empty();
-        for (var error in errors) {
-          errorlist.append("<li>" + errors[error] + "</li>");
+        if(errors != undefined){
+          $.each(errors, function(i, error){
+            errorlist.append("<li>" + error + "</li>");
+          })
         }
         return errorlist;
       },
@@ -502,17 +513,18 @@
       var element = this;
       var types = element.input["validation"].split(" ");
       var errors = [];
-      for (var i in types) {
-        var rule = $.validator.getRule(types[i]);
+      $.each(types, function(i, type){
+        var rule = $.validator.getRule(type);
         try {
           if (rule.check(element, e) === false) {
             errors.push(rule.msg());
           }
         } catch (e) {
-          errors.push("No rule found for " + types[i] + '(' + i + ')');
+          errors.push("No rule found for " + type + '(' + i + ')');
           errors.push("error: " + e);
         }
-      }
+        
+      })
       return errors;
     },
 
